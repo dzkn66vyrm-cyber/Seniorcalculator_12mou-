@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة المسار التكنولوجي</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #ffffff; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 400px; }
+        h1 { color: #8A1538; font-size: 1.5em; text-align: center; margin-bottom: 20px; }
+        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; background-color: #8A1538; color: white; font-weight: bold; cursor: pointer; }
+        .calculator { display: none; margin-top: 20px; }
+        table { width: 100%; margin-bottom: 15px; border-collapse: collapse; }
+        td { padding: 10px 0; }
+        input { width: 80px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 5px; }
+        .error { color: red; font-size: 0.9em; display: none; margin-bottom: 10px; }
+        .result { font-weight: bold; margin-top: 10px; color: #8A1538; text-align: center; font-size: 1.3em; padding: 10px; background: #fdf2f2; border-radius: 10px; }
+        #achievement { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4em; color: #8A1538; font-weight: bold; display: none; z-index: 1000; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div id="achievement">كفوووو!</div>
+
+<div class="container">
+    <h1>حاسبة المسار التكنولوجي</h1>
+    <button onclick="showCalculator('sem1')">درجات الفصل الأول</button>
+    <button onclick="showCalculator('sem2')">درجات الفصل الثاني</button>
+
+    <div id="sem1" class="calculator">
+        <div id="res1" class="result"></div>
+        <h2 style="color:#8A1538; font-size: 1.1em;">الفصل الأول (من 40)</h2>
+        <table id="table1"></table>
+        <p id="err1" class="error">خطأ: الدرجة يجب أن تكون بين 0 و 40!</p>
+        <button onclick="calculate('table1', 40, 'res1', 'err1', true)">حساب نسبة الأول</button>
+    </div>
+
+    <div id="sem2" class="calculator">
+        <div id="res2" class="result"></div>
+        <h2 style="color:#8A1538; font-size: 1.1em;">الفصل الثاني (من 60)</h2>
+        <table id="table2"></table>
+        <p id="err2" class="error">خطأ: الدرجة يجب أن تكون بين 0 و 60!</p>
+        <button onclick="calculate('table2', 60, 'res2', 'err2', false)">حساب المجموع النهائي</button>
+    </div>
+    
+    <div id="final-total" class="result" style="margin-top: 30px;"></div>
+</div>
+
+<script>
+    const subjects = ["الرياضيات", "الفيزياء", "إنجليزي", "اللغة العربية", "it", "cs", "إسلامية", "المادةالاختيارية"];
+    let sem1Total = 0;
+
+    function createTable(tableId, maxVal) {
+        const table = document.getElementById(tableId);
+        subjects.forEach(sub => {
+            table.innerHTML += `<tr><td>${sub}</td><td><input type="number" placeholder="0" id="${tableId}_${sub}"></td></tr>`;
+        });
+    }
+
+    createTable('table1', 40);
+    createTable('table2', 60);
+
+    function showCalculator(id) {
+        document.getElementById('sem1').style.display = 'none';
+        document.getElementById('sem2').style.display = 'none';
+        document.getElementById(id).style.display = 'block';
+    }
+
+    function triggerCelebration(percent) {
+        if (percent >= 95 && percent <= 97) {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        } else if (percent >= 98 && percent <= 100) {
+            confetti({ particleCount: 300, spread: 180, origin: { y: 0.5 } });
+            const ach = document.getElementById('achievement');
+            ach.style.display = 'block';
+            setTimeout(() => { ach.style.display = 'none'; }, 2000);
+        }
+    }
+
+    function calculate(tableId, maxVal, resId, errId, isSem1) {
+        const inputs = document.querySelectorAll(`#${tableId} input`);
+        let sum = 0;
+        let hasError = false;
+
+        inputs.forEach(input => {
+            let val = input.value === "" ? 0 : parseFloat(input.value);
+            if (val < 0 || val > maxVal) hasError = true;
+            sum += val;
+        });
+
+        if (hasError) {
+            document.getElementById(errId).style.display = 'block';
+        } else {
+            document.getElementById(errId).style.display = 'none';
+            let percent = (sum / (subjects.length * maxVal)) * 100;
+            document.getElementById(resId).innerText = `نسبة الفصل: ${percent.toFixed(2)}%`;
+            
+            triggerCelebration(percent);
+
+            if (isSem1) {
+                sem1Total = sum;
+            } else {
+                let totalPercent = ((sem1Total + sum) / (subjects.length * 100)) * 100;
+                document.getElementById('final-total').innerText = `المعدل النهائي: ${totalPercent.toFixed(2)}%`;
+                triggerCelebration(totalPercent);
+            }
+        }
+    }
+</script>
+</body>
+</html>
