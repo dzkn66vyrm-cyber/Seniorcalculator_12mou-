@@ -10,13 +10,21 @@
         .container { width: 100%; max-width: 400px; }
         h1 { color: #8A1538; font-size: 1.5em; text-align: center; margin-bottom: 20px; }
         button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; background-color: #8A1538; color: white; font-weight: bold; cursor: pointer; }
-        .calculator { display: none; margin-top: 20px; }
+        .calculator, #welcome-section { display: none; margin-top: 20px; }
+        #welcome-section { text-align: center; margin-top: 50px; }
         table { width: 100%; margin-bottom: 15px; border-collapse: collapse; }
         td { padding: 10px 0; }
-        input { width: 80px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 5px; }
+        input[type="number"] { width: 80px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 5px; }
+        input[type="text"] { width: 100%; padding: 12px; text-align: center; border: 1px solid #ccc; border-radius: 10px; margin-bottom: 8px; font-size: 1em; box-sizing: border-box; }
+        .note { font-size: 0.85em; color: #666; margin-bottom: 15px; text-align: center; }
         .error { color: red; font-size: 0.9em; display: none; margin-bottom: 10px; }
         .result { font-weight: bold; margin-top: 10px; color: #8A1538; text-align: center; font-size: 1.3em; padding: 10px; background: #fdf2f2; border-radius: 10px; }
-        #achievement { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4em; color: #8A1538; font-weight: bold; display: none; z-index: 1000; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); pointer-events: none; }
+        .goal-options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .goal-btn { background-color: #f3e6e8; color: #8A1538; border: 2px solid #8A1538; }
+        .goal-btn:hover { background-color: #8A1538; color: white; }
+        .back-btn { background-color: #6c757d; font-size: 0.9em; padding: 10px; margin-top: 15px; }
+        .back-btn:hover { background-color: #5a6268; }
+        #achievement { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3.5em; color: #8A1538; font-weight: bold; display: none; z-index: 1000; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); pointer-events: none; text-align: center; }
     </style>
 </head>
 <body>
@@ -25,41 +33,82 @@
 
 <div class="container">
     <h1>حاسبة المسار التكنولوجي</h1>
-    <button onclick="showCalculator('sem1')">درجات الفصل الأول</button>
-    <button onclick="showCalculator('sem2')">درجات الفصل الثاني</button>
 
-    <div id="sem1" class="calculator">
-        <div id="res1" class="result"></div>
-        <h2 style="color:#8A1538; font-size: 1.1em;">الفصل الأول (من 40)</h2>
-        <table id="table1"></table>
-        <p id="err1" class="error">خطأ: الدرجة يجب أن تكون بين 0 و 40!</p>
-        <button onclick="calculate('table1', 40, 'res1', 'err1', true)">حساب نسبة الأول</button>
+    <!-- خطوة إدخال الاسم والهدف -->
+    <div id="welcome-section">
+        <h2 style="color:#8A1538; font-size: 1.2em; margin-bottom: 15px;">أدخل اسمك الكريم وهدفك</h2>
+        <input type="text" id="student-name" placeholder="اكتب اسمك هنا...">
+        <div class="note">*ملاحظة، محد بيعرف اسمج/ك</div>
+        <div class="goal-options">
+            <button class="goal-bt
+            <button class="goal-btn" onclick="startApp('حققت النسبه')">حققته</button>
+            <button class="goal-btn" onclick="startApp('اتمنى')">اتمنى</button>
+        </div>
     </div>
 
-    <div id="sem2" class="calculator">
-        <div id="res2" class="result"></div>
-        <h2 style="color:#8A1538; font-size: 1.1em;">الفصل الثاني (من 60)</h2>
-        <table id="table2"></table>
-        <p id="err2" class="error">خطأ: الدرجة يجب أن تكون بين 0 و 60!</p>
-        <button onclick="calculate('table2', 60, 'res2', 'err2', false)">حساب المجموع النهائي</button>
+    <!-- المحتوى الرئيسي (الحاسبة) -->
+    <div id="main-content" style="display: none;">
+        <div id="greeting-display" style="text-align: center; font-weight: bold; color: #8A1538; margin-bottom: 15px; font-size: 1.1em;"></div>
+        
+        <button onclick="showCalculator('sem1')">درجات الفصل الأول</button>
+        <button onclick="showCalculator('sem2')">درجات الفصل الثاني</button>
+
+        <div id="sem1" class="calculator">
+            <div id="res1" class="result"></div>
+            <h2 style="color:#8A1538; font-size: 1.1em;">الفصل الأول (من 40)</h2>
+            <table id="table1"></table>
+            <p id="err1" class="error">خطأ: الدرجة يجب أن تكون بين 0 و 40!</p>
+            <button onclick="calculate('table1', 40, 'res1', 'err1', true)">حساب نسبة الأول</button>
+        </div>
+
+        <div id="sem2" class="calculator">
+            <div id="res2" class="result"></div>
+            <h2 style="color:#8A1538; font-size: 1.1em;">الفصل الثاني (من 60)</h2>
+            <table id="table2"></table>
+            <p id="err2" class="error">خطأ: الدرجة يجب أن تكون بين 0 و 60!</p>
+            <button onclick="calculate('table2', 60, 'res2', 'err2', false)">حساب المجموع النهائي</button>
+        </div>
+        
+        <div id="final-total" class="result" style="margin-top: 30px;"></div>
+        
+        <!-- زر الرجوع لتعديل الاسم والهدف بدون فقدان الأرقام -->
+        <button class="back-btn" onclick="goBackToWelcome()">تعديل الاسم / الهدف</button>
     </div>
-    
-    <div id="final-total" class="result" style="margin-top: 30px;"></div>
 </div>
 
 <script>
-    const subjects = ["الرياضيات", "الفيزياء", "إنجليزي", "اللغة العربية", "it", "cs", "إسلامية", "المادةالاختيارية"];
-    let sem1Total = 0;
+    const subjects = ["الرياضيات", "الفيزياء", "إنجليزي", "اللغة العربية", "it", "cs", "إسلامية", "المادة الاختيارية"];
+    let selectedGoal = "";
 
-    function createTable(tableId, maxVal) {
+    function createTable(tableId) {
         const table = document.getElementById(tableId);
         subjects.forEach(sub => {
             table.innerHTML += `<tr><td>${sub}</td><td><input type="number" placeholder="0" id="${tableId}_${sub}"></td></tr>`;
         });
     }
 
-    createTable('table1', 40);
-    createTable('table2', 60);
+    createTable('table1');
+    createTable('table2');
+
+    // إظهار صفحة الترحيب افتراضياً عند التحميل
+    document.getElementById('welcome-section').style.display = 'block';
+
+    function startApp(goal) {
+        const nameInput = document.getElementById('student-name').value.trim();
+        if(nameInput === "") {
+            alert("الرجاء إدخال الاسم أولاً!");
+            return;
+        }
+        selectedGoal = goal;
+        document.getElementById('welcome-section').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        document.getElementById('greeting-display').innerText = `يا مرحبا، ${nameInput} (هدف: ${goal})`;
+    }
+
+    function goBackToWelcome() {
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('welcome-section').style.display = 'block';
+    }
 
     function showCalculator(id) {
         document.getElementById('sem1').style.display = 'none';
@@ -73,12 +122,19 @@
         } else if (percent >= 98 && percent <= 100) {
             confetti({ particleCount: 300, spread: 180, origin: { y: 0.5 } });
             const ach = document.getElementById('achievement');
+            
+            if (selectedGoal === 'اتمنى') {
+                ach.innerText = "بالتوفيق!";
+            } else {
+                ach.innerText = "كفوووو!";
+            }
+
             ach.style.display = 'block';
             setTimeout(() => { ach.style.display = 'none'; }, 2000);
         }
     }
 
-    function calculate(tableId, maxVal, resId, errId, isSem1) {
+    function getTableSum(tableId, maxVal) {
         const inputs = document.querySelectorAll(`#${tableId} input`);
         let sum = 0;
         let hasError = false;
@@ -89,6 +145,12 @@
             sum += val;
         });
 
+        return { sum, hasError };
+    }
+
+    function calculate(tableId, maxVal, resId, errId, isSem1) {
+        const { sum, hasError } = getTableSum(tableId, maxVal);
+
         if (hasError) {
             document.getElementById(errId).style.display = 'block';
         } else {
@@ -98,16 +160,19 @@
             
             triggerCelebration(percent);
 
-            if (isSem1) {
-                sem1Total = sum;
-            } else {
-                let totalPercent = ((sem1Total + sum) / (subjects.length * 100)) * 100;
-                document.getElementById('final-total').innerText = `المعدل النهائي: ${totalPercent.toFixed(2)}%`;
-                triggerCelebration(totalPercent);
+            if (!isSem1) {
+                const sem1Data = getTableSum('table1', 40);
+                let sem1Percent = (sem1Data.sum / (subjects.length * 40)) * 100;
+                let sem2Percent = (sum / (subjects.length * 60)) * 100;
+                
+                let finalWeightedGrade = (sem1Percent * 0.40) + (sem2Percent * 0.60);
+
+                document.getElementById('final-total').innerText = `المعدل النهائي: ${finalWeightedGrade.toFixed(2)}%`;
+                triggerCelebration(finalWeightedGrade);
             }
         }
     }
 </script>
-</div>
+
 </body>
 </html>
